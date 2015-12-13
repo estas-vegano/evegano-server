@@ -37,7 +37,7 @@ SECRET_KEY = ini_get('common',
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ini_get("common", "DEBUG", 'true').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
