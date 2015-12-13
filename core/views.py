@@ -34,6 +34,9 @@ def check(request):
     else:
         lang = settings.DEFAULT_LANGUAGE
 
+    if 'code' not in request.GET or 'type' not in request.GET:
+        return JsonResponse({'error': 'Expected args: code, type'})
+
     code = models.ProductCode.objects\
                              .filter(code=request.GET['code'],
                                      type=request.GET['type'])\
