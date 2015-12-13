@@ -16,6 +16,11 @@ CODES = (
     ('barcode', 'BAR Code')
 )
 
+LANGS = (
+    ('ru', 'ru'),
+    ('en', 'en'),
+)
+
 
 def take_title(objects):
     all = objects.order_by('lang').values_list('lang', 'title')
@@ -46,7 +51,7 @@ class Producer(models.Model):
 
 class ProducerTitle(models.Model):
     producer = models.ForeignKey(Producer)
-    lang = models.CharField(max_length=64)
+    lang = models.CharField(max_length=64, choices=LANGS)
     title = models.CharField(max_length=512)
 
 
@@ -77,7 +82,7 @@ class Category(models.Model):
 
 class CategoryTitle(models.Model):
     category = models.ForeignKey(Category)
-    lang = models.CharField(max_length=64)
+    lang = models.CharField(max_length=64, choices=LANGS)
     title = models.CharField(max_length=512)
 
 
@@ -122,5 +127,5 @@ class ProductPhoto(models.Model):
 
 class ProductTitle(models.Model):
     product = models.ForeignKey(Product)
-    lang = models.CharField(max_length=64)
+    lang = models.CharField(max_length=64, choices=LANGS)
     title = models.CharField(max_length=512)
