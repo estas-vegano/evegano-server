@@ -60,4 +60,5 @@ target/
 
 # custom
 db.sqlite3
+settings.ini
 static/product/*
