@@ -64,10 +64,8 @@ def categories(request):
         lang = settings.DEFAULT_LANGUAGE
 
     return JsonResponse({
-        'categories': {
-            c.id: _get_title(c, lang)
-            for c in models.Category.objects.filter(parent__isnull=True)
-        }
+        c.id: _get_title(c, lang)
+        for c in models.Category.objects.filter(parent__isnull=True)
     })
 
 
@@ -80,6 +78,7 @@ def category(request, id):
     category_obj = models.Category.objects.get(id=id)
 
     return JsonResponse({
+        'id': category_obj.id,
         'title': category_obj.get_title(lang),
         'children': {
             c.id: _get_title(c, lang)
