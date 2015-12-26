@@ -16,12 +16,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from core.views import check, add
+from core.views import check, add, categories, category
 
 admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/v[0-9.]+/categories/', categories),
+    url(r'^api/v[0-9.]+/categories/(?P<id>[0-9]+)', category),
     url(r'^api/v[0-9.]+/check$', check),
     url(r'^api/v[0-9.]+/add$', add),
 ]

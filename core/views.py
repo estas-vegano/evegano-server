@@ -49,3 +49,40 @@ def check(request):
 
 def add(request):
     pass
+
+
+def _get_title(category, lang):
+    o = category.categorytitle_set.filter(lang=lang).first()
+    if o:
+        return o.title
+
+
+def categories(request):
+    if hasattr(request, 'LANGUAGE_CODE'):
+        lang = request.LANGUAGE_CODE
+    else:
+        lang = settings.DEFAULT_LANGUAGE
+
+    return JsonResponse({
+        'categories': {
+            c.id: _get_title(c, lang)
+            for c in models.Category.objects.filter(parent__isnull=True)
+        }
+    })
+
+
+def category(request, id):
+    if hasattr(request, 'LANGUAGE_CODE'):
+        lang = request.LANGUAGE_CODE
+    else:
+        lang = settings.DEFAULT_LANGUAGE
+
+    category_obj = models.Category.objects.get(id=id)
+
+    return JsonResponse({
+        'title': category_obj.get_title(lang),
+        'children': {
+            c.id: _get_title(c, lang)
+            for c in models.Category.objects.filter(parent=category_obj)
+        }
+    })
