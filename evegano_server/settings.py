@@ -38,6 +38,7 @@ SECRET_KEY = ini_get('common',
 DEBUG = ini_get("common", "DEBUG", 'true').lower() == 'true'
 
 ALLOWED_HOSTS = ['*']
+PHOTO_HOST = 'http://evegano.free-node.ru'
 
 
 # Application definition

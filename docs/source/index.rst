@@ -125,7 +125,7 @@ categories: Получения категорий верхнего уровня
 ::
    {
        "1": "Category 1",
-       "3": "Category 2"
+       "3": "Category 3"
    }
 
 
@@ -142,10 +142,39 @@ categories: Получения детализации категории
        "id": "1"
        "title": "Catgory title",
        "children": {
-           "2": "Subcategory title"
-           "2": "Subcategory title"
+           "4": "Subcategory title"
+           "5": "Subcategory title"
        },
    }
+
+producers: Получение списка производителей
+------------------
+
+Запрос:
+::
+   [GET] /api/v1.0/producers/
+
+Параметры:
+::
+  title=<string>
+
+Пример ответа:
+::
+   {
+       "producers": [
+           {
+               "id": 1,
+               "ethical": false,
+               "title": "Microsoft"
+           },
+           {
+               "id": 1,
+               "ethical": false,
+               "title": "Meta Company"
+           }
+       ]
+   }
+
 ..
    Indices and tables
    ==================

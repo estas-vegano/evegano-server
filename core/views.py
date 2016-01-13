@@ -4,6 +4,14 @@ from django.conf import settings
 import core.models as models
 
 
+def _get_lang(request):
+    if hasattr(request, 'LANGUAGE_CODE'):
+        lang = request.LANGUAGE_CODE
+    else:
+        lang = settings.DEFAULT_LANGUAGE
+    return lang
+
+
 def product_json(product_id, lang):
     product = models.Product.objects.select_related()\
                                     .filter(id=product_id)\
@@ -29,10 +37,7 @@ def product_json(product_id, lang):
 
 
 def check(request):
-    if hasattr(request, 'LANGUAGE_CODE'):
-        lang = request.LANGUAGE_CODE
-    else:
-        lang = settings.DEFAULT_LANGUAGE
+    lang = _get_lang(request)
 
     if 'code' not in request.GET or 'type' not in request.GET:
         return JsonResponse({'error': 'Expected args: code, type'})
@@ -58,10 +63,7 @@ def _get_title(category, lang):
 
 
 def categories(request):
-    if hasattr(request, 'LANGUAGE_CODE'):
-        lang = request.LANGUAGE_CODE
-    else:
-        lang = settings.DEFAULT_LANGUAGE
+    lang = _get_lang(request)
 
     return JsonResponse({
         c.id: _get_title(c, lang)
@@ -70,11 +72,7 @@ def categories(request):
 
 
 def category(request, id):
-    if hasattr(request, 'LANGUAGE_CODE'):
-        lang = request.LANGUAGE_CODE
-    else:
-        lang = settings.DEFAULT_LANGUAGE
-
+    lang = _get_lang(request)
     category_obj = models.Category.objects.get(id=id)
 
     return JsonResponse({
@@ -84,4 +82,26 @@ def category(request, id):
             c.id: _get_title(c, lang)
             for c in models.Category.objects.filter(parent=category_obj)
         }
+    })
+
+
+def producers(request):
+    lang = _get_lang(request)
+    titles = models.ProducerTitle.objects.select_related()
+    titles = titles.filter(lang=lang)
+
+    if 'title' in request.GET:
+        titles = titles.filter(
+            title__istartswith=request.GET['title']
+        )
+
+    return JsonResponse({
+        'producers': [
+            {
+                'id': title.producer.id,
+                'title': title.title,
+                'ethical': title.producer.ethical
+            }
+            for title in titles
+        ]
     })

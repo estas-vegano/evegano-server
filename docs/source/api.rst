@@ -23,6 +23,7 @@ type=<barcode|qrcode>
     "info": "vegan",
     "photo": "http://example.com/some.png",
     "producer": {
+    "id": 1,
 	"title": "Microsoft",
 	"ethical": bool
     },

@@ -102,7 +102,10 @@ class Product(models.Model):
             return None
 
     def get_photo_url(self):
-        return self.productphoto_set.first().get_url()
+        photo = self.productphoto_set.first()
+        if photo:
+            return photo.get_url()
+        return None
 
 
 class ProductCode(models.Model):
@@ -118,11 +121,10 @@ class ProductPhoto(models.Model):
                               null=True)
 
     def get_url(self):
-        return '/' + self.image.url
+        return settings.PHOTO_HOST + '/' + self.image.url
 
     def img_tag(self):
         return format_html('<img src="%s"/>' % self.get_url())
-
 
 
 class ProductTitle(models.Model):
