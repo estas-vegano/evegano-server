@@ -28,28 +28,28 @@ check: Проверка товара
 
 Пример ответа:
 ::
-	{
-	    "id": 1,
-	    "title": "Some good",
-	    "info": "vegan",
-	    "photo": "http://example.com/some.png",
-	    "producer": {
-		    "title": "Microsoft",
-    		"ethical": bool
-	    },
+    {
+        "id": 1,
+        "title": "Some good",
+        "info": "vegan",
+        "photo": "http://example.com/some.png",
+        "producer": {
+            "title": "Microsoft",
+            "ethical": bool
+        },
         "codes": {
             "barcode": "some-bar-code",
             "qrcode": "some-qr-code",
         },
-	    "category": {
-	        "id": "category",
-	        "title": "Some sub category",
-	        "sub_category": {
-	            "id": "subcategory",
-	            "title": "Some sub category"
-	        }
-	    }
-	}
+        "category": {
+            "id": "category",
+            "title": "Some sub category",
+            "sub_category": {
+                "id": "subcategory",
+                "title": "Some sub category"
+            }
+        }
+    }
 
 add: Добавление товара
 ------------------
@@ -60,36 +60,36 @@ add: Добавление товара
 
 Пример запроса:
 ::
-	{
-	    "title": "Some good",
-	    "info": "vegan",
-	    "producer": "Microsoft",
-	    "category": {
-	        "id": "category",
-	        "title": "Some sub category",
-	        "sub_category": {
-	            "id": "subcategory",
-	            "title": "Some sub category"
-	        }
-	    }
-	}
+    {
+        "title": "Some good",
+        "info": "vegan",
+        "producer": "Microsoft",
+        "category": {
+            "id": "category",
+            "title": "Some sub category",
+            "sub_category": {
+                "id": "subcategory",
+                "title": "Some sub category"
+            }
+        }
+    }
 
 Пример ответа:
 ::
-	{
-	    "id": 1,
-	    "title": "Some good",
-	    "info": "vegan",
-	    "producer": "Microsoft",
-	    "category": {
-	        "id": "category",
-	        "title": "Some sub category",
-	        "sub_category": {
-	            "id": "subcategory",
-	            "title": "Some sub category"
-	        }
-	    }
-	}
+    {
+        "id": 1,
+        "title": "Some good",
+        "info": "vegan",
+        "producer": "Microsoft",
+        "category": {
+            "id": "category",
+            "title": "Some sub category",
+            "sub_category": {
+                "id": "subcategory",
+                "title": "Some sub category"
+            }
+        }
+    }
 
 add: Добавление изображения к товару
 ------------------
@@ -100,9 +100,9 @@ add: Добавление изображения к товару
 
 Пример ответа:
 ::
-	{
-	    "photo":"http://example.com/some.png"
-	}
+    {
+        "photo":"http://example.com/some.png"
+    }
 
 complain: Жалоба на тип товара
 ------------------
@@ -113,9 +113,9 @@ complain: Жалоба на тип товара
 
 Пример запроса:
 ::
-	{
-	    "message":"VI VSIE VRETE"
-	}
+    {
+        "message":"VI VSIE VRETE"
+    }
 
 
 categories: Получения категорий верхнего уровня
