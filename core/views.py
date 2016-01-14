@@ -16,24 +16,7 @@ def product_json(product_id, lang):
     product = models.Product.objects.select_related()\
                                     .filter(id=product_id)\
                                     .first()
-    result = {
-        'id': product.id,
-        'title': product.get_title(lang),
-        'info': product.info,
-        'photo': product.get_photo_url(),
-        'producer': {'id': product.producer.id,
-                     'title': product.producer.get_title(lang),
-                     'ethical': product.producer.ethical},
-    }
-    category = product.category.get_json_tree(lang)
-    if product.category.parent:
-        category_parent = product.category.parent.get_json_tree(lang)
-        category_parent['sub'] = category
-        result['category'] = category_parent
-    else:
-        result['category'] = category
-
-    return result
+    return product.to_dict(lang)
 
 
 def check(request):

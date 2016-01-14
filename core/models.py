@@ -107,6 +107,29 @@ class Product(models.Model):
             return photo.get_url()
         return None
 
+    def to_dict(self, lang):
+        result = {
+            'id': self.id,
+            'title': self.get_title(lang),
+            'info': self.info,
+            'codes': {code.type: code.code
+                      for code in self.productcode_set.all()},
+            'photo': self.get_photo_url(),
+            'producer': {'id': self.producer.id,
+                         'title': self.producer.get_title(lang),
+                         'ethical': self.producer.ethical},
+        }
+        category = self.category.get_json_tree(lang)
+        if self.category.parent:
+            category_parent = self.category.parent.get_json_tree(lang)
+            category_parent['sub'] = category
+            result['category'] = category_parent
+        else:
+            result['category'] = category
+
+        return result
+
+
 
 class ProductCode(models.Model):
     product = models.ForeignKey(Product)

@@ -34,9 +34,13 @@ check: Проверка товара
 	    "info": "vegan",
 	    "photo": "http://example.com/some.png",
 	    "producer": {
-		"title": "Microsoft",
-		"ethical": bool
+		    "title": "Microsoft",
+    		"ethical": bool
 	    },
+        "codes": {
+            "barcode": "some-bar-code",
+            "qrcode": "some-qr-code",
+        },
 	    "category": {
 	        "id": "category",
 	        "title": "Some sub category",
