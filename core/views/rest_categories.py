@@ -1,5 +1,12 @@
-def categories(request):
-    lang = _get_lang(request)
+import json
+import core.models as models
+from .utils import success_response, error_response
+from .utils import _get_title
+from .decorators import inject_json_data, inject_lang
+
+
+@inject_lang
+def categories(request, lang):
 
     return success_response({
         c.id: _get_title(c, lang)

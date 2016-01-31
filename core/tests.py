@@ -14,6 +14,42 @@ class ApiBase(TestCase):
                                json.dumps(data),
                                content_type="application/json")
 
+    def create_category(self, title):
+        category = models.Category()
+        category.save()
+        category_title = models.CategoryTitle(
+            category=category,
+            lang=settings.DEFAULT_LANGUAGE,
+            title=title
+        )
+        category_title.save()
+        return category
+
+    def create_product(self, codes=[]):
+        category = self.create_category('Some category')
+
+        producer = models.Producer()
+        producer.save()
+        producer_title = models.ProducerTitle(
+            producer=producer,
+            lang=settings.DEFAULT_LANGUAGE,
+            title='Some producer'
+        )
+        producer_title.save()
+
+        product = models.Product(
+            info='vegan',
+            producer=producer,
+            category=category
+        )
+        product.save()
+
+        for type, code in codes:
+            product_code = models.ProductCode(product=product,
+                                              type=type,
+                                              code=code)
+            product_code.save()
+        return product
 
 class ApiTestCase(ApiBase):
 
@@ -48,13 +84,34 @@ class ApiTestCase(ApiBase):
     def test_check(self):
         expected_err = {"error": "Expected args: code, type."}
         not_found_err = {"error": "Not found."}
+
+        product = self.create_product(codes=[('barcode', 'code'), ])
+        product_data = {
+            u'id': product.id,
+            u'info': u'vegan',
+            u'category': {
+                u'id': product.category.id,
+                u'title': u'Some category'
+            },
+            u'codes': {
+                u'barcode': u'code'
+            },
+            u'producer': {
+                u'id': product.producer.id,
+                u'ethical': True,
+                u'title': u'Some producer'
+            },
+            u'title': None,
+            u'photo': None,
+        }
         cases = [
             ({}, expected_err, 400),
             ({'code': '123'}, expected_err, 400),
             ({'type': 'barcode'}, expected_err, 400),
             ({'code': 'unknown', 'type': 'barcode'}, not_found_err, 404),
-            #({'code': 'unknown', 'type': 'barcode'}, {}, 200),
+            ({'code': 'code', 'type': 'barcode'}, product_data, 200),
         ]
+
         for args, expected_err, expected_code in cases:
             response = self.client.get('/api/v1/check', args)
             self.assertEquals(
@@ -102,4 +159,14 @@ class ApiTestCase(ApiBase):
                            u'title': u'some-product'},
              u'title': u'Some good',
              u'photo': None,}
+        )
+
+    def test_categories(self):
+        self.create_category('Category 1')
+        self.create_category('Category 2')
+        self.create_category('Category 3')
+        response = self.client.get('/api/v1/categories/')
+        self.assertEquals(
+            set(json.loads(response.content).values()),
+            set(['Category 1', 'Category 2', 'Category 3'])
         )
