@@ -116,9 +116,9 @@ class Product(models.Model):
 
     @staticmethod
     def dict_by_id(product_id, lang):
-        product = models.Product.objects.select_related()\
-                                        .filter(id=product_id)\
-                                        .first()
+        product = Product.objects.select_related()\
+                                 .filter(id=product_id)\
+                                 .first()
         return product.to_dict(lang)
 
 
