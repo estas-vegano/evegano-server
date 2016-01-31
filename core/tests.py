@@ -199,6 +199,7 @@ class ApiTestCase(ApiBase):
         p1 = self.create_producer('Producer 1')
         p2 = self.create_producer('Producer 2')
         p3 = self.create_producer('Producer 3')
+        p4 = self.create_producer('Some really other producer')
         response = self.client.get('/api/v1/producers/')
         self.assertEquals(
             json.loads(response.content),
@@ -211,5 +212,23 @@ class ApiTestCase(ApiBase):
                  "title": "Producer 2"},
                 {"id": p3.id,
                  "ethical": True,
-                 "title": "Producer 3"}]}
+                 "title": "Producer 3"},
+                {"id": p4.id,
+                 "ethical": True,
+                 "title": "Some really other producer"}]},
+        )
+
+        response = self.client.get('/api/v1/producers/', {'title': 'Pro'})
+        self.assertEquals(
+            json.loads(response.content),
+            {"producers": [
+                {"id": p1.id,
+                 "ethical": True,
+                 "title": "Producer 1"},
+                {"id": p2.id,
+                 "ethical": True,
+                 "title": "Producer 2"},
+                {"id": p3.id,
+                 "ethical": True,
+                 "title": "Producer 3"},]}
         )
