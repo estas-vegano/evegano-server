@@ -34,6 +34,19 @@ def take_title(objects):
 class Producer(models.Model):
     ethical = models.BooleanField(default=True)
 
+    @staticmethod
+    def create(lang, data):
+        producer = Producer(ethical=data['ethical'])
+        producer.save()
+        title = ProducerTitle(
+            producer=producer,
+            title=data['title'],
+            lang=lang
+        )
+        title.save()
+
+        return producer
+
     def __unicode__(self):
         title = self.producertitle_set.order_by('lang').first()
         if title:
@@ -47,6 +60,13 @@ class Producer(models.Model):
             return title.title
         else:
             return None
+
+    def get_dict(self, lang):
+        return {
+            'id': self.id,
+            'title': self.get_title(lang),
+            'ethical': self.ethical
+        }
 
 
 class ProducerTitle(models.Model):
@@ -93,6 +113,14 @@ class Product(models.Model):
 
     def __unicode__(self):
         return take_title(self.producttitle_set)
+
+    @staticmethod
+    def dict_by_id(product_id, lang):
+        product = models.Product.objects.select_related()\
+                                        .filter(id=product_id)\
+                                        .first()
+        return product.to_dict(lang)
+
 
     def get_title(self, lang):
         title = self.producttitle_set.filter(lang=lang).first()

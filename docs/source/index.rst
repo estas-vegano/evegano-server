@@ -39,7 +39,7 @@ check: Проверка товара
         },
         "codes": {
             "barcode": "some-bar-code",
-            "qrcode": "some-qr-code",
+            "qrcode": "some-qr-code"
         },
         "category": {
             "id": "category",
@@ -49,6 +49,28 @@ check: Проверка товара
                 "title": "Some sub category"
             }
         }
+    }
+
+add: Добавление производителя
+------------------
+
+Запрос:
+::
+  [POST] /api/v1.0/add-producer
+
+Пример запроса:
+::
+    {
+        "title": "Some good",
+        "ethical": true
+    }
+
+Пример ответа:
+::
+    {
+        "id": 1,
+        "title": "Microsoft",
+        "ethical": true
     }
 
 add: Добавление товара
@@ -63,15 +85,8 @@ add: Добавление товара
     {
         "title": "Some good",
         "info": "vegan",
-        "producer": "Microsoft",
-        "category": {
-            "id": "category",
-            "title": "Some sub category",
-            "sub_category": {
-                "id": "subcategory",
-                "title": "Some sub category"
-            }
-        }
+        "producer_id": 1,
+        "category_id": 15
     }
 
 Пример ответа:
