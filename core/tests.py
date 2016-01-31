@@ -14,6 +14,18 @@ class ApiBase(TestCase):
                                json.dumps(data),
                                content_type="application/json")
 
+    def create_producer(self, title):
+        producer = models.Producer()
+        producer.save()
+        producer_title = models.ProducerTitle(
+            producer=producer,
+            lang=settings.DEFAULT_LANGUAGE,
+            title=title
+        )
+        producer_title.save()
+
+        return producer
+
     def create_category(self, title, parent=None):
         category = models.Category(parent=parent)
         category.save()
@@ -28,15 +40,7 @@ class ApiBase(TestCase):
     def create_product(self, codes=[]):
         category = self.create_category('Some category')
 
-        producer = models.Producer()
-        producer.save()
-        producer_title = models.ProducerTitle(
-            producer=producer,
-            lang=settings.DEFAULT_LANGUAGE,
-            title='Some producer'
-        )
-        producer_title.save()
-
+        producer = self.create_producer('Some producer')
         product = models.Product(
             info='vegan',
             producer=producer,
@@ -189,4 +193,23 @@ class ApiTestCase(ApiBase):
                     str(c4.id): "Subcategory 4"
                 },
             }
+        )
+
+    def test_producers(self):
+        p1 = self.create_producer('Producer 1')
+        p2 = self.create_producer('Producer 2')
+        p3 = self.create_producer('Producer 3')
+        response = self.client.get('/api/v1/producers/')
+        self.assertEquals(
+            json.loads(response.content),
+            {"producers": [
+                {"id": p1.id,
+                 "ethical": True,
+                 "title": "Producer 1"},
+                {"id": p2.id,
+                 "ethical": True,
+                 "title": "Producer 2"},
+                {"id": p3.id,
+                 "ethical": True,
+                 "title": "Producer 3"}]}
         )
