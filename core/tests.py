@@ -14,8 +14,8 @@ class ApiBase(TestCase):
                                json.dumps(data),
                                content_type="application/json")
 
-    def create_category(self, title):
-        category = models.Category()
+    def create_category(self, title, parent=None):
+        category = models.Category(parent=parent)
         category.save()
         category_title = models.CategoryTitle(
             category=category,
@@ -169,4 +169,24 @@ class ApiTestCase(ApiBase):
         self.assertEquals(
             set(json.loads(response.content).values()),
             set(['Category 1', 'Category 2', 'Category 3'])
+        )
+
+    def test_category(self):
+        c1 = self.create_category('Category 1')
+        c2 = self.create_category('Subcategory 2', parent=c1)
+        c3 = self.create_category('Subcategory 3', parent=c1)
+        c4 = self.create_category('Subcategory 4', parent=c1)
+
+        response = self.client.get('/api/v1/categories/' + str(c1.id))
+        self.assertEquals(
+            json.loads(response.content),
+            {
+                "id": c1.id,
+                "title": "Category 1",
+                "children": {
+                    str(c2.id): "Subcategory 2",
+                    str(c3.id): "Subcategory 3",
+                    str(c4.id): "Subcategory 4"
+                },
+            }
         )
