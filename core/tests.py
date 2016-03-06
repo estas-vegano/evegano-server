@@ -170,9 +170,13 @@ class ApiTestCase(ApiBase):
         self.create_category('Category 2')
         self.create_category('Category 3')
         response = self.client.get('/api/v1/categories/')
+        categories = json.loads(response.content)['categories']
+        categories.sort()
         self.assertEquals(
-            set(json.loads(response.content).values()),
-            set(['Category 1', 'Category 2', 'Category 3'])
+            categories,
+            [{u'id': 1, u'title': u'Category 1'},
+             {u'id': 2, u'title': u'Category 2'},
+             {u'id': 3, u'title': u'Category 3'}]
         )
 
     def test_category(self):

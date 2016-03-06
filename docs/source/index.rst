@@ -143,8 +143,10 @@ categories: Получения категорий верхнего уровня
 Пример ответа:
 ::
    {
-       "1": "Category 1",
-       "3": "Category 3"
+       "categories": [
+           {"id": 1, "title": "Category 1"},
+           {"id": 2, "title": "Category 2"}
+       ]
    }
 
 

@@ -9,6 +9,8 @@ from .decorators import inject_json_data, inject_lang
 def categories(request, lang):
 
     return success_response({
-        c.id: _get_title(c, lang)
-        for c in models.Category.objects.filter(parent__isnull=True)
+        'categories': [
+            {'id': c.id, 'title': _get_title(c, lang)}
+            for c in models.Category.objects.filter(parent__isnull=True)
+        ]
     })
