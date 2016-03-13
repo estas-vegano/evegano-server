@@ -8,6 +8,7 @@ class ApiBase(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.maxDiff = None
 
     def _post_json(self, url, data):
         return self.client.post(url,
@@ -191,11 +192,11 @@ class ApiTestCase(ApiBase):
             {
                 "id": c1.id,
                 "title": "Category 1",
-                "children": {
-                    str(c2.id): "Subcategory 2",
-                    str(c3.id): "Subcategory 3",
-                    str(c4.id): "Subcategory 4"
-                },
+                "children": [
+                    {'id': c2.id, 'title': "Subcategory 2"},
+                    {'id': c3.id, 'title': "Subcategory 3"},
+                    {'id': c4.id, 'title': "Subcategory 4"}
+                ],
             }
         )
 

@@ -162,10 +162,10 @@ categories: Получения детализации категории
    {
        "id": "1"
        "title": "Catgory title",
-       "children": {
-           "4": "Subcategory title"
-           "5": "Subcategory title"
-       },
+       "children": [
+           {"4": "Subcategory title"},
+           {"5": "Subcategory title"}
+       ],
    }
 
 producers: Получение списка производителей

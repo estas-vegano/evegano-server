@@ -12,8 +12,10 @@ def category(request, lang, id):
     return success_response({
         'id': category_obj.id,
         'title': category_obj.get_title(lang),
-        'children': {
-            c.id: _get_title(c, lang)
-            for c in models.Category.objects.filter(parent=category_obj)
-        }
+        'children': [
+            {'id': c.id,  'title': _get_title(c, lang)}
+            for c in models.Category.objects\
+                .filter(parent=category_obj)\
+                .order_by('id')
+        ]
     })
