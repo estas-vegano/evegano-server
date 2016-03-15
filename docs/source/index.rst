@@ -42,10 +42,10 @@ check: Проверка товара
             "qrcode": "some-qr-code"
         },
         "category": {
-            "id": "category",
+            "id": 1,
             "title": "Some sub category",
             "sub_category": {
-                "id": "subcategory",
+                "id": 2,
                 "title": "Some sub category"
             }
         }
@@ -97,10 +97,10 @@ add: Добавление товара
         "info": "vegan",
         "producer": "Microsoft",
         "category": {
-            "id": "category",
+            "id": 1,
             "title": "Some sub category",
             "sub_category": {
-                "id": "subcategory",
+                "id": 2,
                 "title": "Some sub category"
             }
         }
@@ -163,8 +163,8 @@ categories: Получения детализации категории
        "id": "1"
        "title": "Catgory title",
        "children": [
-           {"4": "Subcategory title"},
-           {"5": "Subcategory title"}
+           {"id": "4", "title": "Subcategory title"},
+           {"id": "5", "title": "Subcategory title"}
        ],
    }
 
