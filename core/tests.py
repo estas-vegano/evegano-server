@@ -103,7 +103,7 @@ class ApiTestCase(ApiBase):
             },
             u'producer': {
                 u'id': product.producer.id,
-                u'ethical': True,
+                u'ethical': None,
                 u'title': u'Some producer'
             },
             u'title': None,
@@ -126,16 +126,33 @@ class ApiTestCase(ApiBase):
             self.assertEquals(response.status_code, expected_code)
 
     def test_add_producer(self):
-        data = {
-            "title": "Some good",
-            "ethical": True
-        }
-        response = self._post_json('/api/v1/add-producer', data)
+        cases = [({"title": "Some good 1",
+                   "ethical": True},
+                  {"ethical": True,
+                   "id": 1,
+                   "title": "Some good 1"}),
 
-        self.assertEquals(
-            json.loads(response.content),
-            {"ethical": True, "id": 1, "title": "Some good"}
-        )
+                 ({"title": "Some good 2",
+                   "ethical": False},
+                  {"ethical": False,
+                   "id": 2,
+                   "title": "Some good 2"}),
+
+                 ({"title": "Some good 3",
+                   "ethical": None},
+                  {"ethical": None,
+                   "id": 3,
+                   "title": "Some good 3"}),
+
+                 ({"title": "Some good 4"},
+                  {"ethical": None,
+                   "id": 4,
+                   "title": "Some good 4"}),]
+
+        for data, expected in cases:
+            response = self._post_json('/api/v1/add-producer', data)
+
+            self.assertEquals(json.loads(response.content), expected)
 
     def test_add(self):
         category = models.Category()
@@ -206,20 +223,21 @@ class ApiTestCase(ApiBase):
         p3 = self.create_producer('Producer 3')
         p4 = self.create_producer('Some really other producer')
         response = self.client.get('/api/v1/producers/')
+
         self.assertEquals(
             json.loads(response.content),
             {"producers": [
                 {"id": p1.id,
-                 "ethical": True,
+                 "ethical": None,
                  "title": "Producer 1"},
                 {"id": p2.id,
-                 "ethical": True,
+                 "ethical": None,
                  "title": "Producer 2"},
                 {"id": p3.id,
-                 "ethical": True,
+                 "ethical": None,
                  "title": "Producer 3"},
                 {"id": p4.id,
-                 "ethical": True,
+                 "ethical": None,
                  "title": "Some really other producer"}]},
         )
 
@@ -228,12 +246,12 @@ class ApiTestCase(ApiBase):
             json.loads(response.content),
             {"producers": [
                 {"id": p1.id,
-                 "ethical": True,
+                 "ethical": None,
                  "title": "Producer 1"},
                 {"id": p2.id,
-                 "ethical": True,
+                 "ethical": None,
                  "title": "Producer 2"},
                 {"id": p3.id,
-                 "ethical": True,
+                 "ethical": None,
                  "title": "Producer 3"},]}
         )

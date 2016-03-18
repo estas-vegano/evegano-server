@@ -21,6 +21,24 @@ LANGS = (
     ('en', 'en'),
 )
 
+ETHICALS = (
+    ('t', 'Ethical'),
+    ('f', 'Not ethical'),
+    ('u', 'Undefined'),
+)
+
+ETHICAL2BOOL = {
+    't': True,
+    'f': False,
+    'u': None
+}
+
+BOOL2ETHICAL = {
+    True: 't',
+    False: 'f',
+    None: 'u'
+}
+
 
 def take_title(objects):
     all = objects.order_by('lang').values_list('lang', 'title')
@@ -32,11 +50,12 @@ def take_title(objects):
 
 
 class Producer(models.Model):
-    ethical = models.BooleanField(default=True)
+    ethical = models.CharField(max_length=1, default='u', choices=ETHICALS)
 
     @staticmethod
     def create(lang, data):
-        producer = Producer(ethical=data['ethical'])
+        producer = Producer()
+        producer.set_ethical(data.get('ethical'))
         producer.save()
         title = ProducerTitle(
             producer=producer,
@@ -61,11 +80,17 @@ class Producer(models.Model):
         else:
             return None
 
+    def get_ethical(self):
+        return ETHICAL2BOOL[self.ethical]
+
+    def set_ethical(self, value):
+        self.ethical = BOOL2ETHICAL[value]
+
     def get_dict(self, lang):
         return {
             'id': self.id,
             'title': self.get_title(lang),
-            'ethical': self.ethical
+            'ethical': self.get_ethical()
         }
 
 
@@ -145,7 +170,7 @@ class Product(models.Model):
             'photo': self.get_photo_url(),
             'producer': {'id': self.producer.id,
                          'title': self.producer.get_title(lang),
-                         'ethical': self.producer.ethical},
+                         'ethical': self.producer.get_ethical()},
         }
         category = self.category.get_json_tree(lang)
         if self.category.parent:

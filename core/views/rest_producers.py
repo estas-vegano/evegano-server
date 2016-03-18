@@ -20,7 +20,7 @@ def producers(request, lang):
             {
                 'id': title.producer.id,
                 'title': title.title,
-                'ethical': title.producer.ethical
+                'ethical': title.producer.get_ethical()
             }
             for title in titles
         ]
