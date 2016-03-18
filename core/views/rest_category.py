@@ -7,7 +7,11 @@ from .decorators import inject_json_data, inject_lang
 
 @inject_lang
 def category(request, lang, id):
-    category_obj = models.Category.objects.get(id=id)
+    category_obj = models.Category.objects.filter(id=id).first()
+
+    if not category_obj:
+        return error_response({'error': 'Not found.'}, status=404)
+
 
     return success_response({
         'id': category_obj.id,
