@@ -46,7 +46,7 @@ def take_title(objects):
         if lang == settings.DEFAULT_LANGUAGE:
             return title
 
-    return None
+    return ''
 
 
 class Producer(models.Model):

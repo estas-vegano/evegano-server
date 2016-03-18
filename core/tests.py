@@ -1,4 +1,5 @@
 import json
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.test import Client
 from django.conf import settings
@@ -182,6 +183,15 @@ class ApiTestCase(ApiBase):
              u'title': u'Some good',
              u'photo': None,}
         )
+
+    def test_add_photo(self):
+        product = self.create_product(codes=[('barcode', 'code'), ])
+        photo = SimpleUploadedFile("photo.png", "file_content", content_type="image/png")
+        response = self.client.post(
+            '/api/v1/add/{}/photo'.format(product.id),
+            {'photo': photo}
+        )
+        self.assertTrue(product.get_photo_url())
 
     def test_categories(self):
         self.create_category('Category 1')
