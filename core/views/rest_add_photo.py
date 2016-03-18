@@ -7,7 +7,7 @@ from .decorators import inject_json_data, inject_lang
 
 @csrf_exempt
 def add_photo(request, product_id):
-    product = models.Product.objects.get(id=product_id)
+    product = models.Product.objects.filter(id=product_id).first()
 
     if not product:
         return error_response({'error': 'Not found.'}, status=404)
