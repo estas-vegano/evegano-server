@@ -30,13 +30,17 @@ ETHICALS = (
 ETHICAL2BOOL = {
     't': True,
     'f': False,
-    'u': None
+    'u': None,
 }
 
 BOOL2ETHICAL = {
     True: 't',
     False: 'f',
-    None: 'u'
+    None: 'u',
+    1: 't',
+    0: 'f',
+    '1': 't',
+    '0': 'f',
 }
 
 
@@ -81,10 +85,10 @@ class Producer(models.Model):
             return None
 
     def get_ethical(self):
-        return ETHICAL2BOOL[self.ethical]
+        return ETHICAL2BOOL.get(self.ethical, None)
 
     def set_ethical(self, value):
-        self.ethical = BOOL2ETHICAL[value]
+        self.ethical = BOOL2ETHICAL.get(value, 'u')
 
     def get_dict(self, lang):
         return {

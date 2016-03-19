@@ -148,12 +148,28 @@ class ApiTestCase(ApiBase):
                  ({"title": "Some good 4"},
                   {"ethical": None,
                    "id": 4,
-                   "title": "Some good 4"}),]
+                   "title": "Some good 4"}),
+
+                 ({"title": "Some good 5",
+                   "ethical": 1},
+                  {"ethical": True,
+                   "id": 5,
+                   "title": "Some good 5"}),]
 
         for data, expected in cases:
             response = self._post_json('/api/v1/add-producer', data)
 
             self.assertEquals(json.loads(response.content), expected)
+
+    def test_add_producer_wrong_ethical(self):
+        data = {"title": "Some good 3",
+                "ethical": 'WAATT'}
+        response = self._post_json('/api/v1/add-producer', data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(
+            json.loads(response.content),
+            {"error": "Parameter ethical must be bool or null"}
+        )
 
     def test_add(self):
         category = models.Category()

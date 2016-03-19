@@ -91,6 +91,10 @@ add: Добавление производителя
 
 Параметр ethical может быть null, либо его можно не передавать.
 
+Возможные ошибки:
+
+* HTTP статус 400, значение error: 'Parameter ethical must be bool or null'
+
 Запрос:
 ::
   [POST] /api/v1.0/add-producer
