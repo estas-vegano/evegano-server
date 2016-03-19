@@ -191,7 +191,7 @@ class ApiTestCase(ApiBase):
             json.loads(response.content),
             {u'id': models.Product.objects.last().id,
              u'info': u'vegan',
-             u'category': {u'id': category.id, u'title': u''},
+             u'category': {u'id': category.id, u'title': None},
              u'codes': {},
              u'producer': {u'id': producer.id,
                            u'ethical': True,

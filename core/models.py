@@ -75,7 +75,7 @@ class Producer(models.Model):
         if title:
             return title.title
         else:
-            return self.id
+            return unicode(self.id)
 
     def get_title(self, lang):
         title = self.producertitle_set.filter(lang=lang).first()
@@ -112,14 +112,14 @@ class Category(models.Model):
         if title:
             return title.title
         else:
-            return self.id
+            return unicode(self.id)
 
     def get_title(self, lang):
         title = self.categorytitle_set.filter(lang=lang).first()
         if title:
             return title.title
         else:
-            return ''
+            return None
 
     def get_json_tree(self, lang):
         tree = {
@@ -141,7 +141,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category)
 
     def __unicode__(self):
-        return take_title(self.producttitle_set)
+        return take_title(self.producttitle_set) or unicode(self.id)
 
     @staticmethod
     def dict_by_id(product_id, lang):
