@@ -169,8 +169,8 @@ class Product(models.Model):
             'id': self.id,
             'title': self.get_title(lang),
             'info': self.info,
-            'codes': {code.type: code.code
-                      for code in self.productcode_set.all()},
+            'codes': [{'type': code.type, 'code': code.code}
+                      for code in self.productcode_set.all()],
             'photo': self.get_photo_url(),
             'producer': {'id': self.producer.id,
                          'title': self.producer.get_title(lang),

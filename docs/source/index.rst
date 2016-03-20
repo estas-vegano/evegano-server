@@ -72,10 +72,10 @@ check: Проверка товара
             "title": "Microsoft",
             "ethical": bool
         },
-        "codes": {
-            "barcode": "some-bar-code",
-            "qrcode": "some-qr-code"
-        },
+        "codes": [
+            {"type": "barcode", "code": "some-bar-code"},
+            {"type": "qrcode", "code": "some-qr-code"}
+        ],
         "category": {
             "id": 1,
             "title": "Some sub category",

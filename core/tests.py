@@ -104,9 +104,9 @@ class ApiTestCase(ApiBase):
                     u'title': u'Category 1',
                 }
             },
-            u'codes': {
-                u'barcode': u'code'
-            },
+            u'codes': [
+                {'type': u'barcode', 'code': u'code'}
+            ],
             u'producer': {
                 u'id': product.producer.id,
                 u'ethical': None,
@@ -206,7 +206,7 @@ class ApiTestCase(ApiBase):
                      u'title': 'Category',
                  }
              },
-             u'codes': {},
+             u'codes': [],
              u'producer': {u'id': producer.id,
                            u'ethical': True,
                            u'title': u'some-product'},
