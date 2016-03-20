@@ -183,12 +183,14 @@ class ApiTestCase(ApiBase):
 
         producer = models.Producer.create(
             settings.DEFAULT_LANGUAGE,
-            {'title': 'some-product', 'ethical': True}
+            {'title': 'some-producer', 'ethical': True}
         )
 
         data = {
             "title": "Some good",
             "info": "vegan",
+            "code_type": "barcode",
+            "code": "barcode-value",
             "producer_id": producer.id,
             "category_id": category.id
         }
@@ -206,10 +208,10 @@ class ApiTestCase(ApiBase):
                      u'title': 'Category',
                  }
              },
-             u'codes': [],
+             u'codes': [{'type': 'barcode', 'code': 'barcode-value'}],
              u'producer': {u'id': producer.id,
                            u'ethical': True,
-                           u'title': u'some-product'},
+                           u'title': u'some-producer'},
              u'title': u'Some good',
              u'photo': None,}
         )

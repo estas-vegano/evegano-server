@@ -127,6 +127,8 @@ add: Добавление товара
     {
         "title": "Some good",
         "info": "vegan",
+        "code_type": "barcode",
+        "code": "barcode-value",
         "producer_id": 1,
         "category_id": 15
     }
@@ -137,7 +139,13 @@ add: Добавление товара
         "id": 1,
         "title": "Some good",
         "info": "vegan",
-        "producer": "Microsoft",
+        "producer": {
+            "id": 1,
+            "title": "Microsoft"
+            "ethical": null,
+        },
+        "photo": null,
+        "codes": [{"type": "barcode", "barcode-value"}],
         "category": {
             "id": 1,
             "title": "Some sub category",
