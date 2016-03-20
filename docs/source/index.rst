@@ -143,7 +143,7 @@ add: Добавление товара
             "title": "Some sub category",
             "parent": {
                 "id": 2,
-                "title": "Some sub category"
+                "title": "Some category"
             }
         }
     }
