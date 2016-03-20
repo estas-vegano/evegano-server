@@ -40,13 +40,14 @@ class ApiBase(TestCase):
         return category
 
     def create_product(self, codes=[]):
-        category = self.create_category('Some category')
+        c1 = self.create_category('Category 1')
+        c2 = self.create_category('Subcategory 2', parent=c1)
 
         producer = self.create_producer('Some producer')
         product = models.Product(
             info='vegan',
             producer=producer,
-            category=category
+            category=c2
         )
         product.save()
 
@@ -97,7 +98,11 @@ class ApiTestCase(ApiBase):
             u'info': u'vegan',
             u'category': {
                 u'id': product.category.id,
-                u'title': u'Some category'
+                u'title': u'Subcategory 2',
+                u'parent': {
+                    u'id': product.category.parent.id,
+                    u'title': u'Category 1',
+                }
             },
             u'codes': {
                 u'barcode': u'code'
@@ -172,8 +177,10 @@ class ApiTestCase(ApiBase):
         )
 
     def test_add(self):
-        category = models.Category()
-        category.save()
+        category_parent = self.create_category('Category')
+        category = self.create_category('Subcategory',
+                                        parent=category_parent)
+
         producer = models.Producer.create(
             settings.DEFAULT_LANGUAGE,
             {'title': 'some-product', 'ethical': True}
@@ -191,7 +198,14 @@ class ApiTestCase(ApiBase):
             json.loads(response.content),
             {u'id': models.Product.objects.last().id,
              u'info': u'vegan',
-             u'category': {u'id': category.id, u'title': None},
+             u'category': {
+                 u'id': category.id,
+                 u'title': 'Subcategory',
+                 u'parent': {
+                     u'id': category.parent.id,
+                     u'title': 'Category',
+                 }
+             },
              u'codes': {},
              u'producer': {u'id': producer.id,
                            u'ethical': True,

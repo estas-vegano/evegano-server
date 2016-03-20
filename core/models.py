@@ -175,14 +175,11 @@ class Product(models.Model):
             'producer': {'id': self.producer.id,
                          'title': self.producer.get_title(lang),
                          'ethical': self.producer.get_ethical()},
+            'category': self.category.get_json_tree(lang)
         }
-        category = self.category.get_json_tree(lang)
         if self.category.parent:
             category_parent = self.category.parent.get_json_tree(lang)
-            category_parent['child'] = category
-            result['category'] = category_parent
-        else:
-            result['category'] = category
+            result['category']['parent'] = category_parent
 
         return result
 
