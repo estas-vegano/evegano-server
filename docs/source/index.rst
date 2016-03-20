@@ -79,7 +79,7 @@ check: Проверка товара
         "category": {
             "id": 1,
             "title": "Some sub category",
-            "sub_category": {
+            "children": {
                 "id": 2,
                 "title": "Some sub category"
             }
@@ -141,7 +141,7 @@ add: Добавление товара
         "category": {
             "id": 1,
             "title": "Some sub category",
-            "sub_category": {
+            "children": {
                 "id": 2,
                 "title": "Some sub category"
             }

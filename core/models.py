@@ -179,7 +179,7 @@ class Product(models.Model):
         category = self.category.get_json_tree(lang)
         if self.category.parent:
             category_parent = self.category.parent.get_json_tree(lang)
-            category_parent['sub'] = category
+            category_parent['child'] = category
             result['category'] = category_parent
         else:
             result['category'] = category
