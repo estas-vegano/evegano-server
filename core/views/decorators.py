@@ -18,7 +18,7 @@ def inject_json_data(view):
 
     @wraps(view)
     def wrapper(request, *args, **kwargs):
-        if request.META['CONTENT_TYPE'] != 'application/json':
+        if 'application/json' not in request.META['CONTENT_TYPE']:
             return error_response(
                 {'error': 'Expected content type: "application/json".'},
                 400
