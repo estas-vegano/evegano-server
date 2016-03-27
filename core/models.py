@@ -9,6 +9,7 @@ INFO_CHOICES = (
     ('vegeterian', 'vegeterian'),
     ('fish', 'fish'),
     ('meat', 'meat'),
+    ('milk', 'milk'),
 )
 
 CODES = (

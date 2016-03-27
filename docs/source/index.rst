@@ -42,7 +42,7 @@ Accept-Language: <en|ru|...>
 check: Проверка товара
 ------------------
 
-Возможные значения поля info: vegan, vegeterian, fish, meat
+Возможные значения поля info: vegan, vegeterian, fish, meat, milk
 
 Запрос:
 ::
