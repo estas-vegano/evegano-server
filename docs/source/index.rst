@@ -9,10 +9,6 @@ Evegano server API
 Accept-Language: <en|ru|...>
 
 
-Возможные типы продуктов
-------------------
-VEGAN, VEGETARIAN, LACTOVEGETARION, FISH, MEAT
-
 Ошибки
 ------------------
 Обработку ошибок следует начинать с анализа HTTP статуса.
@@ -45,6 +41,8 @@ VEGAN, VEGETARIAN, LACTOVEGETARION, FISH, MEAT
 
 check: Проверка товара
 ------------------
+
+Возможные значения поля info: vegan, vegeterian, fish, meat
 
 Запрос:
 ::
