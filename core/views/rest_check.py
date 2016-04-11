@@ -11,7 +11,7 @@ def check(request, lang):
 
     code = models.ProductCode.objects\
                              .filter(code=request.GET['code'],
-                                     type=request.GET['type'])\
+                                     type__name=request.GET['type'])\
                              .first()
     if not code:
         return error_response({'error': 'Not found.'}, status=404)

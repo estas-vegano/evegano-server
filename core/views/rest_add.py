@@ -28,9 +28,12 @@ def add(request, lang, json_data):
         title=json_data['title']
     )
     title.save()
+    code_type, _ = models.CodeType.objects.get_or_create(
+        name=json_data['code_type']
+    )
     code = models.ProductCode(
         product=product,
-        type=json_data['code_type'],
+        type=code_type,
         code=json_data['code'],
     )
     code.save()

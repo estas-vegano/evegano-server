@@ -12,10 +12,10 @@ INFO_CHOICES = (
     ('milk', 'milk'),
 )
 
-CODES = (
-    ('qrcode', 'QR Code'),
-    ('barcode', 'BAR Code')
-)
+# CODES = (
+#     ('qrcode', 'QR Code'),
+#     ('barcode', 'BAR Code')
+# )
 
 LANGS = (
     ('ru', 'ru'),
@@ -170,7 +170,7 @@ class Product(models.Model):
             'id': self.id,
             'title': self.get_title(lang),
             'info': self.info,
-            'codes': [{'type': code.type, 'code': code.code}
+            'codes': [{'type': code.type.name, 'code': code.code}
                       for code in self.productcode_set.all()],
             'photo': self.get_photo_url(),
             'producer': {'id': self.producer.id,
@@ -185,10 +185,15 @@ class Product(models.Model):
         return result
 
 
+class CodeType(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __unicode__(self):
+        return self.name
 
 class ProductCode(models.Model):
     product = models.ForeignKey(Product)
-    type = models.CharField(max_length=64, choices=CODES)
+    type = models.ForeignKey(CodeType)
     code = models.CharField(max_length=512)
 
 

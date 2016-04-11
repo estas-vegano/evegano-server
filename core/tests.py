@@ -52,9 +52,11 @@ class ApiBase(TestCase):
         product.save()
 
         for type, code in codes:
-            product_code = models.ProductCode(product=product,
-                                              type=type,
-                                              code=code)
+            product_code = models.ProductCode(
+                product=product,
+                type=models.CodeType.objects.get_or_create(name=type)[0],
+                code=code
+            )
             product_code.save()
         return product
 
