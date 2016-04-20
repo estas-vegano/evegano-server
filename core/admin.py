@@ -52,7 +52,12 @@ class ProducerAdmin(admin.ModelAdmin):
     list_filter = 'ethical',
 
 
+class ComplainAdmin(admin.ModelAdmin):
+    list_filter = 'lang',
+
+
 admin.site.register(models.Category, CategoryAdmin)
 admin.site.register(models.Product, ProductAdmin)
 admin.site.register(models.Producer, ProducerAdmin)
+admin.site.register(models.Complain, ComplainAdmin)
 admin.site.register(models.CodeType)

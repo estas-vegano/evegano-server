@@ -33,3 +33,21 @@ def inject_json_data(view):
         return view(request, *args, **kwargs)
 
     return wrapper
+
+def require_params(*items):
+
+    def real_decorator(view):
+        @wraps(view)
+        def wrapper(request, *args, **kwargs):
+            print kwargs
+            for item in items:
+                if item not in kwargs['json_data']:
+                    return error_response(
+                        {'error': 'Expected parameter {}'.format(item)},
+                        status=400
+                    )
+
+            return view(request, *args, **kwargs)
+        return wrapper
+
+    return real_decorator

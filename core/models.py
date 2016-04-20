@@ -12,11 +12,6 @@ INFO_CHOICES = (
     ('milk', 'milk'),
 )
 
-# CODES = (
-#     ('qrcode', 'QR Code'),
-#     ('barcode', 'BAR Code')
-# )
-
 LANGS = (
     ('ru', 'ru'),
     ('en', 'en'),
@@ -214,3 +209,11 @@ class ProductTitle(models.Model):
     product = models.ForeignKey(Product)
     lang = models.CharField(max_length=64, choices=LANGS)
     title = models.CharField(max_length=512)
+
+
+class Complain(models.Model):
+    lang = models.CharField(max_length=64, choices=LANGS)
+    message = models.TextField()
+
+    def __unicode__(self):
+        return self.message

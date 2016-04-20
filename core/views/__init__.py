@@ -7,3 +7,4 @@ from rest_categories import categories
 from rest_category import category
 from rest_check import check
 from rest_producers import producers
+from rest_complain import complain
