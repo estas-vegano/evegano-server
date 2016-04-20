@@ -39,6 +39,14 @@ BOOL2ETHICAL = {
     '0': 'f',
 }
 
+COMPLAIN_STATUSES = (
+    ('new', 'New'),
+    ('postponed', 'Postponed'),
+    ('rejected', 'Rejected'),
+    ('done', 'Done'),
+)
+
+
 
 def take_title(objects):
     all = objects.order_by('lang').values_list('lang', 'title')
@@ -186,6 +194,7 @@ class CodeType(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class ProductCode(models.Model):
     product = models.ForeignKey(Product)
     type = models.ForeignKey(CodeType)
@@ -213,7 +222,13 @@ class ProductTitle(models.Model):
 
 class Complain(models.Model):
     lang = models.CharField(max_length=64, choices=LANGS)
+    product = models.ForeignKey(Product, null=True)
     message = models.TextField()
+    status = models.CharField(
+        default='new',
+        max_length=16,
+        choices=COMPLAIN_STATUSES
+    )
 
     def __unicode__(self):
         return self.message

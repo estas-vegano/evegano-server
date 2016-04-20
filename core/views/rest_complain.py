@@ -9,7 +9,15 @@ from .decorators import inject_lang, inject_json_data, require_params
 @csrf_exempt
 @inject_json_data
 @require_params('message')
-def complain(request, lang, json_data):
-    complain = models.Complain(lang=lang, message=json_data['message'])
+def complain(request, product_id, lang, json_data):
+    product = models.Product.objects.filter(id=product_id).first()
+    if not product:
+        return error_response({'error': 'Product not found.'}, status=404)
+
+    complain = models.Complain(
+        product=product,
+        lang=lang,
+        message=json_data['message']
+    )
     complain.save()
     return success_response({})

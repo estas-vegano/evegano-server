@@ -299,3 +299,14 @@ class ApiTestCase(ApiBase):
                  "ethical": None,
                  "title": "Producer 3"},]}
         )
+
+    def test_complain(self):
+        product = self.create_product()
+        response = self._post_json(
+            '/api/v1/{}/complain/'.format(product.id),
+            {'message': 'test'}
+        )
+        self.assertEquals(json.loads(response.content), {})
+        complains = models.Complain.objects.filter(product=product)
+        self.assertEquals(len(complains), 1)
+        self.assertEquals(complains[0].message, 'test')

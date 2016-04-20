@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core import urlresolvers
+
 import core.models as models
 
 
@@ -53,7 +55,19 @@ class ProducerAdmin(admin.ModelAdmin):
 
 
 class ComplainAdmin(admin.ModelAdmin):
-    list_filter = 'lang',
+    list_filter = 'lang', 'status'
+
+    readonly_fields = 'link_to_product',
+    fieldsets = (
+        (None, {
+            'fields': ('lang', 'link_to_product', 'status', 'message', )
+        })
+    ),
+
+    def link_to_product(self, obj):
+        link = urlresolvers.reverse("admin:core_product_change", args=[obj.product.id])
+        return u'<a href="%s">%s</a>' % (link, obj.product)
+    link_to_product.allow_tags = True
 
 
 admin.site.register(models.Category, CategoryAdmin)

@@ -39,7 +39,7 @@ def require_params(*items):
     def real_decorator(view):
         @wraps(view)
         def wrapper(request, *args, **kwargs):
-            print kwargs
+
             for item in items:
                 if item not in kwargs['json_data']:
                     return error_response(

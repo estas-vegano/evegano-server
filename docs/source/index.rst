@@ -187,6 +187,12 @@ complain: Жалоба на тип товара
         "message":"VI VSIE VRETE"
     }
 
+Возможные ошибки:
+
+* HTTP статус 404, товар отсуствует в базе. Значение error: 'Not found'
+
+* HTTP статус 400, не передан параметр message. Значение error: 'Expected parameter message.'
+
 Пример ответа:
 ::
     {}
