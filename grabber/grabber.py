@@ -24,16 +24,13 @@ class GoodsMatrixSpider(Spider):
         self.code_type, _ = models.CodeType.objects.get_or_create(
             name='EAN13'
         )
-        self.producer = models.Producer.objects.get(id=4)
-        self.category = models.Category.objects.get(id=1)
+        self.producer, _ = models.Producer.get_or_create('ru', 'Неизвестный')
 
 
     def task_initial(self, grab, task):
-        print 'Start page'
         return self.task_page(grab, task)
 
     def task_image(self, grab, task):
-        print 'task image'
         path = 'static/product/' + task.img_name
         grab.response.save(
             os.path.join(settings.BASE_DIR, path)
@@ -48,7 +45,6 @@ class GoodsMatrixSpider(Spider):
             href = elem.node().get('href')
             if href and href.startswith(self.site) and \
                href not in self.visited:
-                # print href
                 self.visited.add(href)
                 yield Task('page', url=href)
 
@@ -65,8 +61,18 @@ class GoodsMatrixSpider(Spider):
 
             for elem in grab.doc.select(self.s_category):
                 clist = elem.text().split(' / ')
-                category1 = clist[0].strip()
-                category2 = clist[1].replace('/', '').strip()
+                category1 = clist[1].strip()
+                category2 = clist[2].replace('/', '').strip()
+
+            c1, _ = models.Category.get_or_create(
+                lang='ru', title=category1
+            )
+            c2, _ = models.Category.get_or_create(
+                lang='ru', title=category2
+            )
+            if not c2.parent:
+                c2.parent = c1
+                c2.save()
 
             code_obj = models.ProductCode.objects.filter(
                 type=self.code_type,
@@ -81,13 +87,12 @@ class GoodsMatrixSpider(Spider):
                     code=code,
                     composition=compo,
                     producer=self.producer,
-                    category=self.category,
+                    category=c2,
                     source='goodsmatrix.ru'
                 )
 
                 for elem in grab.doc.select(self.s_img):
                     img_src = elem.node().get('src')
-                    print 'IMAGE TASK', self.site + img_src
                     yield Task('image',
                                url=self.site + img_src,
                                product=product_obj,

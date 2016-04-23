@@ -69,6 +69,23 @@ class Producer(models.Model):
     ethical = models.CharField(max_length=1, default='u', choices=ETHICALS)
 
     @staticmethod
+    def get_or_create(lang, title):
+        title_obj = ProducerTitle.objects\
+                                 .filter(lang=lang, title=title)\
+                                 .first()
+        if title_obj:
+            return title_obj.producer, False
+
+        producer_obj = Producer()
+        producer_obj.save()
+        title_obj = ProducerTitle(lang=lang,
+                                  title=title,
+                                  producer=producer_obj)
+        title_obj.save()
+
+        return producer_obj
+
+    @staticmethod
     def create(lang, data):
         producer = Producer()
         producer.set_ethical(data.get('ethical'))
@@ -118,6 +135,22 @@ class ProducerTitle(models.Model):
 
 class Category(models.Model):
     parent = models.ForeignKey('Category', null=True, blank=True)
+
+    @staticmethod
+    def get_or_create(lang, title):
+        title_obj = CategoryTitle.objects\
+                                 .filter(lang=lang, title=title)\
+                                 .first()
+        if title_obj:
+            return title_obj.category, False
+
+        category = Category()
+        category.save()
+        title_obj = CategoryTitle(category=category, lang=lang, title=title)
+        title_obj.save()
+
+        return category, True
+
 
     def __unicode__(self):
         title = self.categorytitle_set.order_by('lang').first()
