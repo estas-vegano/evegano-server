@@ -9,10 +9,22 @@ from .decorators import inject_json_data, inject_lang
 @inject_json_data
 @inject_lang
 def add(request, lang, json_data):
-    for item in ('title', 'info', 'code_type', 'code', 'producer_id', 'category_id'):
+    for item in ('title', 'info', 'code_type', 'code',
+                 'producer_id', 'category_id'):
         if item not in json_data:
-            return error_response({'error': 'Expected parameter {}'.format(item)},
-                                  status=400)
+            return error_response(
+                {'error': 'Expected parameter {}'.format(item)},
+                status=400
+            )
+    code_type, _ = models.CodeType.objects.get_or_create(
+        name=json_data['code_type']
+    )
+    if models.ProductCode\
+             .objects\
+             .filter(type=code_type, code=json_data['code'])\
+             .first():
+        return error_response({'error': 'Product code already exists'},
+                              status=400)
 
     producer = models.Producer.objects.get(id=json_data['producer_id'])
     category = models.Category.objects.get(id=json_data['category_id'])
@@ -28,9 +40,6 @@ def add(request, lang, json_data):
         title=json_data['title']
     )
     title.save()
-    code_type, _ = models.CodeType.objects.get_or_create(
-        name=json_data['code_type']
-    )
     code = models.ProductCode(
         product=product,
         type=code_type,

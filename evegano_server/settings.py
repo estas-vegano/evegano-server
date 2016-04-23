@@ -39,6 +39,8 @@ DEBUG = ini_get("common", "DEBUG", 'true').lower() == 'true'
 
 ALLOWED_HOSTS = ['*']
 PHOTO_HOST = 'http://evegano.free-node.ru'
+GRAB_THREAD_NUMBER = 10
+# PHOTO_HOST = 'http://127.0.0.1:8000'
 
 
 # Application definition
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'grabber'
 ]
 
 MIDDLEWARE_CLASSES = [

@@ -10,6 +10,14 @@ INFO_CHOICES = (
     ('fish', 'fish'),
     ('meat', 'meat'),
     ('milk', 'milk'),
+    ('unknown', 'unknown'),
+)
+
+SOURCE_CHOICES = (
+    ('undefined', 'undefined'),
+    ('manual', 'manual'),
+    ('user', 'user'),
+    ('goodsmatrix.ru', 'goodsmatrix.ru'),
 )
 
 LANGS = (
@@ -143,9 +151,44 @@ class Product(models.Model):
     info = models.CharField(max_length=255, choices=INFO_CHOICES)
     producer = models.ForeignKey(Producer)
     category = models.ForeignKey(Category)
+    source = models.CharField(max_length=64,
+                              default='undefined',
+                              choices=SOURCE_CHOICES)
 
     def __unicode__(self):
         return take_title(self.producttitle_set) or unicode(self.id)
+
+    @staticmethod
+    def create(lang, title, info, code_type, code,
+               composition, producer, category, source='undefined'):
+        product_obj = Product(
+            info=info,
+            producer=producer,
+            category=category,
+            source=source
+        )
+        product_obj.save()
+        title_obj = ProductTitle(
+            product=product_obj,
+            lang=lang,
+            title=title
+        )
+        title_obj.save()
+        code_obj = ProductCode(
+            product=product_obj,
+            type=code_type,
+            code=code
+        )
+        code_obj.save()
+        if composition:
+            composition_obj = ProductComposition(
+                product=product_obj,
+                lang=lang,
+                composition=composition
+            )
+            composition_obj.save()
+
+        return product_obj
 
     @staticmethod
     def dict_by_id(product_id, lang):
@@ -218,6 +261,12 @@ class ProductTitle(models.Model):
     product = models.ForeignKey(Product)
     lang = models.CharField(max_length=64, choices=LANGS)
     title = models.CharField(max_length=512)
+
+
+class ProductComposition(models.Model):
+    product = models.ForeignKey(Product)
+    lang = models.CharField(max_length=64, choices=LANGS)
+    composition = models.TextField()
 
 
 class Complain(models.Model):

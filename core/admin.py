@@ -30,16 +30,22 @@ class ProductCodeInline(admin.TabularInline):
     extra = 0
 
 
+class ProductCompositionInline(admin.TabularInline):
+    model = models.ProductComposition
+    extra = 0
+
+
 class ProductAdmin(admin.ModelAdmin):
-    search_fields = 'producttitle__title',
-    list_filter = 'info', 'category'
+    search_fields = 'producttitle__title', 'productcode__code',
+    list_filter = 'info', 'category', 'source'
     readonly_fields = 'id',
     inlines = [ProductCodeInline,
                ProductTitleInline,
+               ProductCompositionInline,
                ProductPhotoInline]
     fieldsets = (
         (None, {
-            'fields': ('id', 'category', 'info', 'producer', )
+            'fields': ('id', 'category', 'info', 'producer', 'source')
         })
     ),
 
