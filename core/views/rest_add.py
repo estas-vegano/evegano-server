@@ -1,6 +1,7 @@
 import json
 from django.views.decorators.csrf import csrf_exempt
 import core.models as models
+import core.err_codes as err_codes
 from .utils import success_response, error_response
 from .decorators import inject_json_data, inject_lang
 
@@ -13,8 +14,8 @@ def add(request, lang, json_data):
                  'producer_id', 'category_id'):
         if item not in json_data:
             return error_response(
-                {'error': 'Expected parameter {}'.format(item)},
-                status=400
+                err_codes.WRONG_PARAMETERS,
+                'Expected parameter {}'.format(item)
             )
     code_type, _ = models.CodeType.objects.get_or_create(
         name=json_data['code_type']
@@ -23,8 +24,8 @@ def add(request, lang, json_data):
              .objects\
              .filter(type=code_type, code=json_data['code'])\
              .first():
-        return error_response({'error': 'Product code already exists'},
-                              status=400)
+        return error_response(err_codes.PRODUCT_EXISTS,
+                              'Product code already exists')
 
     producer = models.Producer.objects.get(id=json_data['producer_id'])
     category = models.Category.objects.get(id=json_data['category_id'])

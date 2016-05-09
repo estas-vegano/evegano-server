@@ -15,13 +15,9 @@ def producers(request, lang):
             title__istartswith=request.GET['title']
         )
 
-    return success_response({
-        'producers': [
-            {
-                'id': title.producer.id,
-                'title': title.title,
-                'ethical': title.producer.get_ethical()
-            }
-            for title in titles
-        ]
-    })
+    return success_response([
+        {'id': title.producer.id,
+         'title': title.title,
+         'ethical': title.producer.get_ethical()}
+        for title in titles
+    ])

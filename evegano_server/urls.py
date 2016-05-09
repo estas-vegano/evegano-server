@@ -12,9 +12,9 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/v[0-9.]+/(?P<product_id>[0-9]+)/complain/?', v.complain),
-    url(r'^api/v[0-9.]+/categories/(?P<id>[0-9]+)/?', v.category),
-    url(r'^api/v[0-9.]+/categories/?', v.categories),
+    url(r'^api/v[0-9.]+/(?P<product_id>[0-9]+)/complain/?$', v.complain),
+    url(r'^api/v[0-9.]+/categories/(?P<id>[0-9]+)/?$', v.category),
+    url(r'^api/v[0-9.]+/categories/?$', v.categories),
     url(r'^api/v[0-9.]+/check/?$', v.check),
     url(r'^api/v[0-9.]+/add/?$', v.add),
     url(r'^api/v[0-9.]+/add/(?P<product_id>[0-9]+)/photo$', v.add_photo),

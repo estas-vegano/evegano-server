@@ -60,6 +60,7 @@ class ApiBase(TestCase):
             product_code.save()
         return product
 
+
 class ApiTestCase(ApiBase):
 
     def test_add_wrong_content_type(self):
@@ -73,7 +74,8 @@ class ApiTestCase(ApiBase):
                                         content_type="wrong")
             self.assertEquals(
                 json.loads(response.content),
-                {'error': 'Expected content type: "application/json".'}
+                {'error_code': -2,
+                 'error_message': 'Expected content type: "application/json".'}
             )
 
     def test_wrong_json(self):
@@ -87,24 +89,30 @@ class ApiTestCase(ApiBase):
                                         content_type="application/json")
             self.assertEquals(
                 json.loads(response.content),
-                {'error': 'No JSON object could be decoded.'}
+                {'error_code': -3,
+                 'error_message': 'No JSON object could be decoded.'}
             )
 
     def test_check(self):
-        expected_err = {"error": "Expected args: code, type."}
-        not_found_err = {"error": "Not found."}
+        expected_err = {"error_code": -5,
+                        "error_message": "Expected parameters: code, type."}
+        not_found_err = {"error_code": -7,
+                         "error_message": "Product code not found."}
 
         product = self.create_product(codes=[('barcode', 'code'), ])
         product_data = {
-            u'id': product.id,
-            u'info': u'vegan',
-            u'category': {
-                u'id': product.category.id,
-                u'title': u'Subcategory 2',
-                u'parent': {
-                    u'id': product.category.parent.id,
-                    u'title': u'Category 1',
-                }
+            'error_code': 0,
+            'error_message': None,
+            'result': {
+                u'id': product.id,
+                u'info': u'vegan',
+                u'category': {
+                    u'id': product.category.id,
+                    u'title': u'Subcategory 2',
+                    u'parent': {
+                        u'id': product.category.parent.id,
+                        u'title': u'Category 1',
+                    }
             },
             u'codes': [
                 {'type': u'barcode', 'code': u'code'}
@@ -115,13 +123,14 @@ class ApiTestCase(ApiBase):
                 u'title': u'Some producer'
             },
             u'title': None,
-            u'photo': None,
+                u'photo': None,
+            }
         }
         cases = [
-            ({}, expected_err, 400),
-            ({'code': '123'}, expected_err, 400),
-            ({'type': 'barcode'}, expected_err, 400),
-            ({'code': 'unknown', 'type': 'barcode'}, not_found_err, 404),
+            ({}, expected_err, 200),
+            ({'code': '123'}, expected_err, 200),
+            ({'type': 'barcode'}, expected_err, 200),
+            ({'code': 'unknown', 'type': 'barcode'}, not_found_err, 200),
             ({'code': 'code', 'type': 'barcode'}, product_data, 200),
         ]
 
@@ -166,16 +175,18 @@ class ApiTestCase(ApiBase):
         for data, expected in cases:
             response = self._post_json('/api/v1/add-producer', data)
 
-            self.assertEquals(json.loads(response.content), expected)
+            self.assertEquals(json.loads(response.content)['result'],
+                              expected)
 
     def test_add_producer_wrong_ethical(self):
         data = {"title": "Some good 3",
                 "ethical": 'WAATT'}
         response = self._post_json('/api/v1/add-producer', data)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
         self.assertEquals(
             json.loads(response.content),
-            {"error": "Parameter ethical must be bool or null"}
+            {"error_code": -11,
+             "error_message": "The parameter ethical should be bool or null"}
         )
 
     def test_add(self):
@@ -199,7 +210,7 @@ class ApiTestCase(ApiBase):
         response = self._post_json('/api/v1/add', data)
 
         self.assertEqual(
-            json.loads(response.content),
+            json.loads(response.content)['result'],
             {u'id': models.Product.objects.last().id,
              u'info': u'vegan',
              u'category': {
@@ -218,12 +229,63 @@ class ApiTestCase(ApiBase):
              u'photo': None,}
         )
 
+    def test_add_wo_title(self):
+        category_parent = self.create_category('Category')
+        category = self.create_category('Subcategory',
+                                        parent=category_parent)
+
+        producer = models.Producer.create(
+            settings.DEFAULT_LANGUAGE,
+            {'title': 'some-producer', 'ethical': True}
+        )
+
+        data = {
+            "info": "vegan",
+            "code_type": "barcode",
+            "code": "barcode-value",
+            "producer_id": producer.id,
+            "category_id": category.id
+        }
+        response = self._post_json('/api/v1/add', data)
+        self.assertEquals(
+            json.loads(response.content),
+            {'error_code': -5,
+             'error_message': 'Expected parameter title'}
+        )
+
+    def test_add_exists(self):
+        category_parent = self.create_category('Category')
+        category = self.create_category('Subcategory',
+                                        parent=category_parent)
+
+        producer = models.Producer.create(
+            settings.DEFAULT_LANGUAGE,
+            {'title': 'some-producer', 'ethical': True}
+        )
+
+        data = {
+            "title": "some",
+            "info": "vegan",
+            "code_type": "barcode",
+            "code": "barcode-value",
+            "producer_id": producer.id,
+            "category_id": category.id
+        }
+        response = self._post_json('/api/v1/add', data)
+        response = self._post_json('/api/v1/add', data)
+        self.assertEquals(
+            json.loads(response.content),
+            {'error_code': -19,
+             'error_message': 'Product code already exists'}
+        )
+
+
     def test_add_photo(self):
         product = self.create_product(codes=[('barcode', 'code'), ])
         photo = SimpleUploadedFile("photo.png", "file_content", content_type="image/png")
         response = self.client.post(
             '/api/v1/add/{}/photo'.format(product.id),
-            {'photo': photo}
+            {'url': photo}
         )
         self.assertTrue(product.get_photo_url())
 
@@ -232,7 +294,7 @@ class ApiTestCase(ApiBase):
         self.create_category('Category 2')
         self.create_category('Category 3')
         response = self.client.get('/api/v1/categories/')
-        categories = json.loads(response.content)['categories']
+        categories = json.loads(response.content)['result']
         categories.sort()
         self.assertEquals(
             categories,
@@ -249,7 +311,7 @@ class ApiTestCase(ApiBase):
 
         response = self.client.get('/api/v1/categories/' + str(c1.id))
         self.assertEquals(
-            json.loads(response.content),
+            json.loads(response.content)['result'],
             {
                 "id": c1.id,
                 "title": "Category 1",
@@ -261,6 +323,16 @@ class ApiTestCase(ApiBase):
             }
         )
 
+    def test_category_not_found(self):
+        response = self.client.get('/api/v1/categories/9999')
+        self.assertEquals(
+            json.loads(response.content),
+            {
+                'error_code': -17,
+                'error_message': 'Category not found.'
+            }
+        )
+
     def test_producers(self):
         p1 = self.create_producer('Producer 1')
         p2 = self.create_producer('Producer 2')
@@ -269,35 +341,33 @@ class ApiTestCase(ApiBase):
         response = self.client.get('/api/v1/producers/')
 
         self.assertEquals(
-            json.loads(response.content),
-            {"producers": [
-                {"id": p1.id,
-                 "ethical": None,
-                 "title": "Producer 1"},
-                {"id": p2.id,
-                 "ethical": None,
-                 "title": "Producer 2"},
-                {"id": p3.id,
-                 "ethical": None,
-                 "title": "Producer 3"},
-                {"id": p4.id,
-                 "ethical": None,
-                 "title": "Some really other producer"}]},
+            json.loads(response.content)['result'],
+            [{"id": p1.id,
+              "ethical": None,
+              "title": "Producer 1"},
+             {"id": p2.id,
+              "ethical": None,
+              "title": "Producer 2"},
+             {"id": p3.id,
+              "ethical": None,
+              "title": "Producer 3"},
+             {"id": p4.id,
+              "ethical": None,
+              "title": "Some really other producer"}],
         )
 
         response = self.client.get('/api/v1/producers/', {'title': 'Pro'})
         self.assertEquals(
-            json.loads(response.content),
-            {"producers": [
-                {"id": p1.id,
-                 "ethical": None,
-                 "title": "Producer 1"},
-                {"id": p2.id,
-                 "ethical": None,
-                 "title": "Producer 2"},
-                {"id": p3.id,
-                 "ethical": None,
-                 "title": "Producer 3"},]}
+            json.loads(response.content)['result'],
+            [{"id": p1.id,
+              "ethical": None,
+              "title": "Producer 1"},
+             {"id": p2.id,
+              "ethical": None,
+              "title": "Producer 2"},
+             {"id": p3.id,
+              "ethical": None,
+              "title": "Producer 3"},]
         )
 
     def test_complain(self):
@@ -306,7 +376,21 @@ class ApiTestCase(ApiBase):
             '/api/v1/{}/complain/'.format(product.id),
             {'message': 'test'}
         )
-        self.assertEquals(json.loads(response.content), {})
+        self.assertEquals(
+            json.loads(response.content),
+            {u'error_code': 0, u'error_message': None, 'result': None}
+        )
         complains = models.Complain.objects.filter(product=product)
         self.assertEquals(len(complains), 1)
         self.assertEquals(complains[0].message, 'test')
+
+    def test_complain_not_found(self):
+        product = self.create_product()
+        response = self._post_json(
+            '/api/v1/999/complain/',
+            {'message': 'test'}
+        )
+        self.assertEquals(
+            json.loads(response.content),
+            {u'error_code': -7, u'error_message': 'Product code not found.'}
+        )

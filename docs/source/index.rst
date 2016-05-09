@@ -9,32 +9,41 @@ Evegano server API
 Accept-Language: <en|ru|...>
 
 
-Ошибки
+Общий формат запроса
 ------------------
-Обработку ошибок следует начинать с анализа HTTP статуса.
-Могут быть следующие варианты:
 
-* Запрос завершился успешно, HTTP статус равен 200.
+HTTP статус всегда имеет значение 200, в том числе и при неуспешных/некорректных запросах.
 
-* Запрос завершился нефатальной ошибкой, HTTP статус отличен от 200 и тело ответа содержит валидный json.
+Если статус не равен 200, значит сервер не справился с обработкой запроса.
 
-* Запрос заверишлся фатальной ошибкой приложения или до выполненния приложения не дошло, HTTP статус равен 5XX, тело ответа не содержит валидного json.
+Каждый ответ сервера всегда содержит поля error_code и error_message.
 
+Если запрос успешен, то error_code будет содержать значение 0, error_message будет содержать null, а поле result собственно содержание ответа.
 
-Ответ нефатальных ошибок имеет вид:
+Пример:
 ::
-   {'error': 'error description'}
+    {
+        'error_code': 0 ,
+        'error_message': null,
+        'result': ...
+    }
 
-Данное сообщение об ошибке не локализовано и не предназначено для показа пользователю. Его назначение - удобство в отладке, поведение приложения же рекомендуется основывать на HTTP статусах.
+В примерах, которые можно найти ниже опускается уровень ошибок и приводится сразу значение result.
 
-Общие для всех запросов нефатальные ошибки:
+Общие для всех запросов ошибки:
 
-* HTTP статус 400, значение error: 'Expected content type: "application/json".'
+==========  =============
+error_code  error_message
+==========  =============
+0           null
+-2          Expected content type: "application/json".
+-3          No JSON object could be decoded.
+-5          Expected parameter <PARAMETER_NAME>
+-5          Expected parameters: <PARAM1>, <PARAM2>, ...
+-11         The parameter <PARAMETER_NAME> should be ...
+==========  =============
 
-* HTTP статус 400, значение error: 'No JSON object could be decoded.'
-
-Статусы остальных возможных нефатальных ошибок описаны в конкретных запросах.
-
+Значения остальных ошибок описаны в конкретных запросах.
 
 Запросы
 ==================
@@ -55,9 +64,11 @@ check: Проверка товара
 
 Возможные ошибки:
 
-* HTTP статус 400, значение error: 'Expected args: code, type.'
-
-* HTTP статус 404, код отсуствует в базе. Значение error: 'Not found'
+==========  =============
+error_code  error_message
+==========  =============
+-7          Product code not found.
+==========  =============
 
 Пример ответа:
 ::
@@ -91,7 +102,12 @@ add-producer: Добавление производителя
 
 Возможные ошибки:
 
-* HTTP статус 400, значение error: 'Parameter ethical must be bool or null'
+==========  =============
+error_code  error_message
+==========  =============
+-11          The parameter ethical should be bool or null
+==========  =============
+
 
 Запрос:
 ::
@@ -119,6 +135,12 @@ add: Добавление товара
 Запрос:
 ::
   [POST] /api/v1.0/add
+
+==========  =============
+error_code  error_message
+==========  =============
+-19         Product code already exists
+==========  =============
 
 Пример запроса:
 ::
@@ -163,15 +185,18 @@ add: Добавление фотографии к товару
 
 Возможные ошибки:
 
-* HTTP статус 404, товар отсуствует в базе. Значение error: 'Not found'
-
-* HTTP статус 400, изображение не передано. Значение error: 'No image was sent.'
+==========  =============
+error_code  error_message
+==========  =============
+-13         Photo not found.
+-5          No image was sent.
+==========  =============
 
 
 Пример ответа:
 ::
     {
-        "photo":"http://example.com/some.png"
+        "url": "http://example.com/some.png"
     }
 
 complain: Жалоба на тип товара
@@ -184,18 +209,21 @@ complain: Жалоба на тип товара
 Пример запроса:
 ::
     {
-        "message":"VI VSIE VRETE"
+        "message": "VI VSIE VRETE"
     }
 
 Возможные ошибки:
 
-* HTTP статус 404, товар отсуствует в базе. Значение error: 'Not found'
+==========  =============
+error_code  error_message
+==========  =============
+-7          Product code not found.
+==========  =============
 
-* HTTP статус 400, не передан параметр message. Значение error: 'Expected parameter message.'
 
 Пример ответа:
 ::
-    {}
+    null
 
 
 categories: Получения категорий верхнего уровня
@@ -207,12 +235,11 @@ categories: Получения категорий верхнего уровня
 
 Пример ответа:
 ::
-   {
-       "categories": [
-           {"id": 1, "title": "Category 1"},
-           {"id": 2, "title": "Category 2"}
-       ]
-   }
+   [
+       {"id": 1, "title": "Category 1"},
+       {"id": 2, "title": "Category 2"}
+   ]
+
 
 
 categories: Получения детализации категории
@@ -224,7 +251,11 @@ categories: Получения детализации категории
 
 Возможные ошибки:
 
-* HTTP статус 404, категория отсуствует в базе. Значение error: 'Not found'
+==========  =============
+error_code  error_message
+==========  =============
+-17         Category not found.
+==========  =============
 
 Пример ответа:
 ::
@@ -250,20 +281,18 @@ producers: Получение списка производителей
 
 Пример ответа:
 ::
-   {
-       "producers": [
-           {
-               "id": 1,
-               "ethical": false,
-               "title": "Microsoft"
-           },
-           {
-               "id": 1,
-               "ethical": false,
-               "title": "Meta Company"
-           }
-       ]
-   }
+    [
+        {
+            "id": 1,
+            "ethical": false,
+            "title": "Microsoft"
+        },
+        {
+            "id": 1,
+            "ethical": false,
+            "title": "Meta Company"
+        }
+    ]
 
 ..
    Indices and tables

@@ -17,8 +17,18 @@ def _get_lang(request):
     return lang
 
 
-def error_response(data, status):
-    return JsonResponse(data, status=status)
+def error_response(code, message):
+    response = {
+        'error_code': code,
+        'error_message': message,
+    }
+    return JsonResponse(response)
+
 
 def success_response(data):
-    return JsonResponse(data)
+    response = {
+        'error_code': 0,
+        'error_message': None,
+        'result': data
+    }
+    return JsonResponse(response)
