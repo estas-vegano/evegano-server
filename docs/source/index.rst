@@ -51,7 +51,7 @@ error_code  error_message
 check: Проверка товара
 ------------------
 
-Возможные значения поля info: vegan, vegeterian, fish, meat, milk
+Возможные значения поля info: vegan, vegeterian, fish, meat, milk, unknown
 
 Запрос:
 ::
