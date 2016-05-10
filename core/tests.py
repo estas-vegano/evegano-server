@@ -1,20 +1,23 @@
 import json
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.test import Client
 from django.conf import settings
 import models
+import core.views as views
 
 class ApiBase(TestCase):
 
     def setUp(self):
         self.client = Client()
         self.maxDiff = None
+        self.factory = RequestFactory()
 
     def _post_json(self, url, data):
-        return self.client.post(url,
-                               json.dumps(data),
-                               content_type="application/json")
+        return self.client.post(
+            url,
+            json.dumps(data),
+            content_type="application/json")
 
     def create_producer(self, title):
         producer = models.Producer()
@@ -229,6 +232,35 @@ class ApiTestCase(ApiBase):
              u'photo': None,}
         )
 
+    def test_add(self):
+        factory = RequestFactory()
+        category_parent = self.create_category('Category')
+        category = self.create_category('Subcategory',
+                                        parent=category_parent)
+
+        producer = models.Producer.create(
+            settings.DEFAULT_LANGUAGE,
+            {'title': 'some-producer', 'ethical': True}
+        )
+
+        data = {
+            "title": "Some good",
+            "info": "vegan",
+            "code_type": "barcode",
+            "code": "barcode-value",
+            "producer_id": producer.id,
+            "category_id": category.id
+        }
+        request = factory.post(
+            '/api/v1/add', json.dumps(data),
+            content_type="application/json")
+        request.LANGUAGE_CODE = 'some-custom-lang'
+        response = views.add(request)
+
+        pc = models.ProductCode.objects.get(code="barcode-value")
+        self.assertEquals(pc.product.get_title('some-custom-lang'),
+                          "Some good")
+
     def test_add_wo_title(self):
         category_parent = self.create_category('Category')
         category = self.create_category('Subcategory',
@@ -275,7 +307,7 @@ class ApiTestCase(ApiBase):
         response = self._post_json('/api/v1/add', data)
         self.assertEquals(
             json.loads(response.content),
-            {'error_code': -19,
+            {'error_code': -13,
              'error_message': 'Product code already exists'}
         )
 
@@ -288,6 +320,29 @@ class ApiTestCase(ApiBase):
             {'url': photo}
         )
         self.assertTrue(product.get_photo_url())
+
+    def test_add_photo_no_image(self):
+        product = self.create_product(codes=[('barcode', 'code'), ])
+        response = self.client.post(
+            '/api/v1/add/{}/photo'.format(product.id)
+        )
+        self.assertEquals(
+            json.loads(response.content),
+            {"error_message": "No image was sent.",
+             "error_code": -5}
+        )
+
+    def test_add_photo_not_found(self):
+        photo = SimpleUploadedFile("photo.png", "file_content", content_type="image/png")
+        response = self.client.post(
+            '/api/v1/add/999/photo',
+            {'url': photo}
+        )
+        self.assertEquals(
+            json.loads(response.content),
+            {"error_message": "Product not found.",
+             "error_code": -7}
+        )
 
     def test_categories(self):
         self.create_category('Category 1')
@@ -385,7 +440,6 @@ class ApiTestCase(ApiBase):
         self.assertEquals(complains[0].message, 'test')
 
     def test_complain_not_found(self):
-        product = self.create_product()
         response = self._post_json(
             '/api/v1/999/complain/',
             {'message': 'test'}
@@ -393,4 +447,12 @@ class ApiTestCase(ApiBase):
         self.assertEquals(
             json.loads(response.content),
             {u'error_code': -7, u'error_message': 'Product code not found.'}
+        )
+
+    def test_complain_wo_message(self):
+        response = self._post_json('/api/v1/999/complain/', {})
+        self.assertEquals(
+            json.loads(response.content),
+            {u'error_code': -5,
+             u'error_message': 'Expected parameter message'}
         )

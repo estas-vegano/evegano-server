@@ -11,8 +11,8 @@ def add_photo(request, product_id):
     product = models.Product.objects.filter(id=product_id).first()
 
     if not product:
-        return error_response(err_codes.PHOTO_NOT_FOUND,
-                              'Photo not found.')
+        return error_response(err_codes.PRODUCT_NOT_FOUND,
+                              'Product not found.')
 
     for name, photo in request.FILES.items():
         product_photo = models.ProductPhoto(product=product, image=photo)

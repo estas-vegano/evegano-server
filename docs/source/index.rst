@@ -43,7 +43,7 @@ error_code  error_message
 -11         The parameter <PARAMETER_NAME> should be ...
 ==========  =============
 
-Значения остальных ошибок описаны в конкретных запросах.
+ ошибок описаны в конкретных запросах.
 
 Запросы
 ==================
@@ -139,7 +139,7 @@ add: Добавление товара
 ==========  =============
 error_code  error_message
 ==========  =============
--19         Product code already exists
+-13         Product code already exists
 ==========  =============
 
 Пример запроса:
@@ -188,8 +188,8 @@ add: Добавление фотографии к товару
 ==========  =============
 error_code  error_message
 ==========  =============
--13         Photo not found.
 -5          No image was sent.
+-7          Product not found.
 ==========  =============
 
 

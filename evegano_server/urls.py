@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.conf import settings
 from django.views.generic import RedirectView
 
-
 import core.views as v
 
 admin.autodiscover()
